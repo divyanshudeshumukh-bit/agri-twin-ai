@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Box, Sprout, Brain, BarChart3, MessageSquare, Settings, Leaf,
+  Home, Box, Sprout, Brain, BarChart3, MessageSquare, Settings, Leaf, Radio,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -8,12 +8,13 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Digital Twin", url: "/digital-twin", icon: Box },
+  { title: "Home", url: "/home", icon: Home },
+  { title: "Sensor Network", url: "/sensor-network", icon: Radio },
+  { title: "Future Digital Twin", url: "/digital-twin", icon: Box },
   { title: "Plants", url: "/plants", icon: Sprout },
   { title: "AI Analysis", url: "/ai-analysis", icon: Brain },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Chat", url: "/chat", icon: MessageSquare },
+  { title: "AI Brain", url: "/chat", icon: MessageSquare },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
