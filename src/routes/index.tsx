@@ -37,7 +37,7 @@ function Landing() {
             <a href="#amd" className="hover:text-foreground transition-colors">AMD</a>
             <a href="#fireworks" className="hover:text-foreground transition-colors">Fireworks</a>
           </div>
-          <Link to="/dashboard">
+          <Link to="/home">
             <Button className="rounded-xl gradient-primary text-primary-foreground shadow-glow hover:opacity-90">
               Launch Digital Twin <ArrowRight className="ml-1 h-4 w-4" />
             </Button>
@@ -65,7 +65,7 @@ function Landing() {
             and turns thousands of signals into actionable, AI-powered decisions.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/dashboard">
+            <Link to="/home">
               <Button size="lg" className="rounded-xl gradient-primary text-primary-foreground shadow-glow hover:opacity-90 h-12 px-6">
                 Launch Digital Twin <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -194,7 +194,7 @@ function Landing() {
           <div className="absolute inset-0 -z-10 gradient-primary opacity-10" />
           <h2 className="text-4xl font-bold tracking-tight">Ready to see your farm come alive?</h2>
           <p className="mt-3 text-muted-foreground">Launch the interactive digital twin dashboard.</p>
-          <Link to="/dashboard">
+          <Link to="/home">
             <Button size="lg" className="mt-6 h-12 px-8 rounded-xl gradient-primary text-primary-foreground shadow-glow">
               Launch Digital Twin <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

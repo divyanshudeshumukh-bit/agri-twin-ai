@@ -4,48 +4,147 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Sparkles, User, Leaf } from "lucide-react";
 import { useFarm } from "@/lib/farm-context";
+import type { Scenario } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/_app/chat")({
-  head: () => ({ meta: [{ title: "AI Assistant · AgriTwin AI" }] }),
+  head: () => ({ meta: [{ title: "AI Brain · AgriTwin AI" }] }),
   component: Chat,
 });
 
 interface Msg { role: "user" | "assistant"; text: string }
 
 const suggestions = [
+  "Hi",
+  "What can you do?",
+  "Summarize today's farm condition",
   "Why should I water today?",
+  "Explain soil moisture",
   "What fertilizer should I use?",
-  "Why is this plant unhealthy?",
-  "When will harvest be ready?",
-  "How can I improve yield?",
+  "When will harvest begin?",
+  "Generate a farm report",
 ];
 
-function replyFor(q: string, scenarioKey: string): string {
-  const dry = scenarioKey === "dry";
-  const disease = scenarioKey === "disease";
-  if (/water/i.test(q))
-    return dry
-      ? "Soil moisture is at 22% in the west quadrant — well below the 45% target. I recommend a 45-minute drip cycle in the next 3 hours."
-      : "Moisture is healthy at 68%. You can safely skip today; next optimal window is tomorrow at 6:00 AM.";
-  if (/fertilizer/i.test(q))
-    return disease
-      ? "Given the fungal outbreak, apply potassium silicate this evening — it strengthens cell walls and reduces spread."
-      : "Your NPK profile looks balanced. Consider a light foliar potassium spray (0.5%) next week to support flowering.";
-  if (/unhealthy|disease/i.test(q))
-    return disease
-      ? "Zone NE shows Blight symptoms: dark lesions + high humidity (84%). Deploy a copper-based spray tonight and isolate affected rows."
-      : "Most plants are healthy (94%). The 42 flagged plants show minor nutrient stress — check pH in row 7.";
-  if (/harvest/i.test(q))
-    return `Predicted harvest window: ${dry ? "32-36 days" : disease ? "38-42 days" : "22-26 days"} based on current growth rate.`;
-  if (/yield/i.test(q))
-    return "Top three yield levers right now: (1) irrigation timing to sunrise, (2) NPK top-up on rows 3-5, (3) trellis adjustment for canopy exposure.";
-  return "Great question. Based on your live twin telemetry, I'd recommend monitoring for the next 24h and re-checking sensor deltas.";
+// --- Intent detection (small local NLU) ---
+
+type Intent =
+  | "greet" | "howareyou" | "aboutself" | "capabilities" | "thanks" | "bye"
+  | "moisture" | "water" | "fertilizer" | "disease" | "harvest" | "weather"
+  | "growth" | "yield" | "explain" | "next" | "summary" | "report" | "nonfarm" | "generic";
+
+function detectIntent(q: string, memory: Msg[]): Intent {
+  const t = q.trim().toLowerCase();
+  if (!t) return "generic";
+  if (/^(hi|hello|hey|yo|hola|good\s?(morning|afternoon|evening))\b/.test(t)) return "greet";
+  if (/how\s+are\s+you|how'?s\s+it\s+going|how\s+r\s+u/.test(t)) return "howareyou";
+  if (/(about\s+yourself|who\s+are\s+you|tell\s+me\s+about\s+you)/.test(t)) return "aboutself";
+  if (/(what\s+can\s+you\s+do|capabilities|help\s+me|features)/.test(t)) return "capabilities";
+  if (/(thanks|thank\s+you|thx|appreciate)/.test(t)) return "thanks";
+  if (/(bye|goodbye|see\s+you|cya)/.test(t)) return "bye";
+  if (/(summar(y|ize)|today'?s\s+(farm|condition)|overview)/.test(t)) return "summary";
+  if (/(report|pdf|export)/.test(t)) return "report";
+  if (/(soil\s*moisture|moisture)/.test(t)) return "moisture";
+  if (/(water|irriga|watering)/.test(t)) return "water";
+  if (/(fertili[sz]er|npk|nitrogen|phosphorus|potassium|nutri)/.test(t)) return "fertilizer";
+  if (/(disease|blight|mildew|rust|unhealthy|sick|pest)/.test(t)) return "disease";
+  if (/(harvest|ready|yield)/.test(t)) return "harvest";
+  if (/(weather|rain|temperature|humidity|wind)/.test(t)) return "weather";
+  if (/(growth|grow)/.test(t)) return "growth";
+  if (/(explain|why|reason)/.test(t)) return "explain";
+  if (/(what\s+should\s+i\s+do|next\s+step|action)/.test(t)) return "next";
+  // detect non-farming topic (sports, jokes, politics, code, math)
+  if (/(joke|movie|football|cricket|politic|python|javascript|math|weather in [a-z])/.test(t)) return "nonfarm";
+  // Fall through: use recent memory to disambiguate follow-ups
+  const last = memory.filter(m => m.role === "assistant").slice(-1)[0]?.text.toLowerCase() ?? "";
+  if (/moisture/.test(last)) return "moisture";
+  if (/fertilizer/.test(last)) return "fertilizer";
+  return "generic";
+}
+
+function reply(intent: Intent, q: string, s: Scenario, memory: Msg[]): string {
+  const sn = s.sensors;
+  const f = s.farm;
+  const name = s.name;
+  const userTurns = memory.filter(m => m.role === "user").length;
+  const firstTime = userTurns <= 1;
+
+  switch (intent) {
+    case "greet":
+      return `${firstTime ? "Hi there! 🌱 " : "Hey again! "}I'm the AgriTwin AI Brain, watching over your **${name}** in real time. What would you like to know?`;
+    case "howareyou":
+      return `I'm running smoothly on Fireworks AI. More importantly, your farm is at **${s.healthScore}/100** health — ${s.description.toLowerCase()}.`;
+    case "aboutself":
+      return "I'm the **AgriTwin AI Brain** — an agriculture-focused assistant powered by Fireworks AI (Llama 3 70B) and an AMD-accelerated digital twin of your farm. I combine live sensor telemetry with plant physiology and weather models to give grounded recommendations.";
+    case "capabilities":
+      return [
+        "Here's what I can help you with:",
+        "• Explain any sensor value (moisture, pH, NPK, humidity…)",
+        "• Diagnose plant disease and suggest treatment",
+        "• Recommend irrigation and fertilizer schedules",
+        "• Predict harvest timing and yield",
+        "• Interpret weather impact on your crop",
+        "• Generate a full farm report",
+        "• Answer 'what should I do next?' with a prioritized action list",
+      ].join("\n");
+    case "thanks":
+      return "Anytime 🌾. I'll keep the twin humming — just ask if anything else comes up.";
+    case "bye":
+      return "Take care! I'll keep monitoring the farm in the background.";
+    case "moisture":
+      return `Soil moisture is currently **${sn.soilMoisture}%**. ${sn.soilMoisture < 30 ? "That's below the 45% comfort band — the crop is water-stressed and I recommend irrigating within the next 3 hours." : sn.soilMoisture > 75 ? "That's above optimal — hold off on irrigation to avoid root rot and encourage deeper roots." : "That's inside the healthy 55–75% band, so no immediate irrigation needed."}`;
+    case "water":
+      return s.key === "dry"
+        ? `Your west quadrant is at ${sn.soilMoisture}% — well below target. Run a **45-minute drip cycle** in the next 3 hours delivering roughly **4.5 L per plant**. Skip east rows.`
+        : s.key === "disease"
+        ? `Given the fungal pressure and ${sn.humidity}% humidity, **reduce irrigation ~20%** and shift watering to early morning to let the canopy dry out.`
+        : `Moisture is healthy at ${sn.soilMoisture}%. You can safely skip today; the next optimal window is **tomorrow around 06:00**.`;
+    case "fertilizer":
+      return s.key === "disease"
+        ? `Apply **potassium silicate** this evening — it strengthens cell walls and slows fungal spread. Delay nitrogen for 5 days.`
+        : s.key === "dry"
+        ? `Hold fertilizer until moisture recovers to avoid root burn. In ~48h, resume with **NPK 10-10-10** at half rate.`
+        : `Your NPK profile (N ${sn.nitrogen} · P ${sn.phosphorus} · K ${sn.potassium}) is balanced. A light foliar potassium spray (0.5%) next week will support flowering.`;
+    case "disease":
+      return s.key === "disease"
+        ? `NE quadrant shows **Late Blight** — dark expanding lesions with 84% humidity. ${s.disease.confirmed} plants confirmed, ${s.disease.suspected} suspected. Apply **copper hydroxide tonight**, isolate the rows, and remove infected leaves into sealed bags.`
+        : `Most plants (${f.healthy}) are healthy. Only ${f.diseased} confirmed cases. Continue weekly scouting and keep humidity below 70%.`;
+    case "harvest":
+      return `Predicted harvest in **~${sn.harvestDays} days** (crop age vs growth curve). Current growth index: ${sn.growth}%.`;
+    case "weather":
+      return `Right now: **${s.weather.temp}°C · ${s.weather.condition}**, humidity ${sn.humidity}%, wind ${sn.windSpeed} km/h, rain probability ${sn.rainProb}%. ${sn.rainProb > 60 ? "Rain expected — pause irrigation." : sn.airTemp > 32 ? "Heat stress risk — consider shade netting." : "Conditions look supportive for growth."}`;
+    case "growth":
+      return `Growth is tracking at **${sn.growth}%** of the seasonal curve. ${sn.growth < 60 ? "Below baseline — likely water or nutrient limited." : "On or above schedule."}`;
+    case "yield":
+    case "next":
+      return [
+        "Top three actions right now:",
+        s.key === "dry" ? "1. Irrigate the west quadrant (4.5 L/plant) within 3 hours" : s.key === "disease" ? "1. Apply copper hydroxide to NE quadrant tonight" : "1. Hold irrigation — moisture healthy",
+        `2. ${s.key === "disease" ? "Isolate infected rows and prune affected leaves" : "Foliar potassium 0.5% within 7 days"}`,
+        `3. Recheck sensors in 6 hours — I'll flag anything drifting`,
+      ].join("\n");
+    case "explain":
+      return "My recommendations combine four inputs: live sensor telemetry, the 30-day weather forecast, a plant-physiology model calibrated to your crop, and historical yield curves. AMD-accelerated twin simulation weights each signal, and Fireworks AI turns the result into plain English.";
+    case "summary":
+      return [
+        `**Today at ${name}**`,
+        `• Health score **${s.healthScore}/100** — ${s.description}`,
+        `• Plants: ${f.healthy} healthy · ${f.warning} warning · ${f.diseased} diseased`,
+        `• Soil moisture ${sn.soilMoisture}% · humidity ${sn.humidity}% · air ${sn.airTemp}°C`,
+        `• Weather: ${s.weather.condition}, rain ${sn.rainProb}%`,
+        `• Harvest window: ~${sn.harvestDays} days`,
+      ].join("\n");
+    case "report":
+      return `Farm report drafted 📄 — includes health score, sensor readouts, plant distribution, disease breakdown, and prioritized actions. It would download as **agritwin-${s.key}-report.pdf** in production.`;
+    case "nonfarm":
+      return "That's a bit outside my field 🌾 — I specialize in agriculture: soil, sensors, plants, disease, weather, and harvest planning. But happy to chat! Would you like a farm summary or a specific recommendation?";
+    default:
+      return "Good question. Based on the current twin telemetry, I'd monitor for the next 24 hours and re-check any sensor whose values drift by more than 10%. Want me to explain a specific reading?";
+  }
 }
 
 function Chat() {
-  const { scenarioKey } = useFarm();
+  const { scenario } = useFarm();
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", text: "Hi 👋 I'm your AgriTwin AI assistant. Ask me anything about your farm." },
+    { role: "assistant", text: "Hi 👋 I'm your **AgriTwin AI Brain**. I remember our conversation, understand agriculture in depth, and can also just chat. Ask me anything — or try a suggestion below." },
   ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -57,20 +156,27 @@ function Chat() {
 
   const send = (text: string) => {
     if (!text.trim()) return;
-    setMessages((m) => [...m, { role: "user", text }]);
+    const userMsg: Msg = { role: "user", text };
+    setMessages((m) => [...m, userMsg]);
     setInput("");
     setTyping(true);
     setTimeout(() => {
-      setMessages((m) => [...m, { role: "assistant", text: replyFor(text, scenarioKey) }]);
+      setMessages((prev) => {
+        const memory = [...prev, userMsg];
+        const intent = detectIntent(text, memory);
+        const answer = reply(intent, text, scenario, memory);
+        return [...prev, { role: "assistant", text: answer }];
+      });
       setTyping(false);
-    }, 700);
+    }, 650);
   };
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-9rem)]">
       <div className="mb-4">
-        <h1 className="text-3xl font-bold tracking-tight">AI Chat Assistant</h1>
-        <p className="text-muted-foreground text-sm">Powered by Fireworks AI · Llama 3 70B</p>
+        <div className="text-xs uppercase tracking-widest text-primary font-semibold">AI Brain</div>
+        <h1 className="text-3xl font-bold tracking-tight mt-1">Chat Assistant</h1>
+        <p className="text-muted-foreground text-sm">Conversational memory · agriculture-tuned · Fireworks AI · Llama 3 70B</p>
       </div>
 
       <div ref={scrollRef} className="glass rounded-2xl flex-1 p-4 overflow-y-auto space-y-4">
@@ -81,13 +187,13 @@ function Chat() {
             }`}>
               {m.role === "user" ? <User className="h-4 w-4" /> : <Leaf className="h-4 w-4" />}
             </div>
-            <div className={`rounded-2xl px-4 py-3 max-w-[80%] text-sm ${
+            <div className={`rounded-2xl px-4 py-3 max-w-[80%] text-sm whitespace-pre-wrap leading-relaxed ${
               m.role === "user"
                 ? "bg-primary text-primary-foreground"
                 : "bg-background/70 border border-border/50"
-            }`}>
-              {m.text}
-            </div>
+            }`}
+              dangerouslySetInnerHTML={{ __html: formatMd(m.text) }}
+            />
           </div>
         ))}
         {typing && (
@@ -126,7 +232,7 @@ function Chat() {
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about irrigation, disease, harvest..."
+          placeholder="Ask me anything — greetings, farm advice, or 'what should I do next?'"
           className="rounded-xl h-12 bg-background/70"
         />
         <Button type="submit" className="rounded-xl h-12 px-5 gradient-primary text-primary-foreground shadow-glow">
@@ -135,4 +241,15 @@ function Chat() {
       </form>
     </div>
   );
+}
+
+// Tiny markdown escape/format for **bold** and newlines
+function formatMd(s: string) {
+  const esc = s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return esc
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br />");
 }
