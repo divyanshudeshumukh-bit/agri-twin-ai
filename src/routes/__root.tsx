@@ -77,13 +77,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AgriTwin AI — Digital Twin for Precision Agriculture" },
-      { name: "description", content: "AI-powered digital twin platform for real-time precision farming. Powered by AMD Instinct and Fireworks AI." },
+      { title: "AgriTwin AI — AI-Powered Digital Twin for Precision Agriculture" },
+      { name: "description", content: "AgriTwin AI is a real-time digital twin platform for precision farming, powered by AMD Instinct and Fireworks AI." },
       { name: "author", content: "AgriTwin AI" },
-      { property: "og:title", content: "AgriTwin AI — Digital Twin for Precision Agriculture" },
-      { property: "og:description", content: "Monitor soil, weather, and plant health in real time with AI-driven recommendations." },
+      { property: "og:title", content: "AgriTwin AI — AI-Powered Digital Twin for Precision Agriculture" },
+      { property: "og:description", content: "AgriTwin AI is a real-time digital twin platform for precision farming, powered by AMD Instinct and Fireworks AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "AgriTwin AI — AI-Powered Digital Twin for Precision Agriculture" },
+      { name: "twitter:description", content: "AgriTwin AI is a real-time digital twin platform for precision farming, powered by AMD Instinct and Fireworks AI." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a854b43-1d0e-4c3d-a25a-2d49a93d8fae/id-preview-19a4fdf3--df6b296c-e00e-4e57-a7ce-bb05c36adec4.lovable.app-1783340304351.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4a854b43-1d0e-4c3d-a25a-2d49a93d8fae/id-preview-19a4fdf3--df6b296c-e00e-4e57-a7ce-bb05c36adec4.lovable.app-1783340304351.png" },
     ],
     links: [
       {
