@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppSensorNetworkRouteImport } from './routes/_app.sensor-network'
 import { Route as AppPlantsRouteImport } from './routes/_app.plants'
+import { Route as AppHomeRouteImport } from './routes/_app.home'
 import { Route as AppDigitalTwinRouteImport } from './routes/_app.digital-twin'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
@@ -32,9 +34,19 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSensorNetworkRoute = AppSensorNetworkRouteImport.update({
+  id: '/sensor-network',
+  path: '/sensor-network',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPlantsRoute = AppPlantsRouteImport.update({
   id: '/plants',
   path: '/plants',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDigitalTwinRoute = AppDigitalTwinRouteImport.update({
@@ -64,7 +76,9 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AppAnalyticsRoute
   '/chat': typeof AppChatRoute
   '/digital-twin': typeof AppDigitalTwinRoute
+  '/home': typeof AppHomeRoute
   '/plants': typeof AppPlantsRoute
+  '/sensor-network': typeof AppSensorNetworkRoute
   '/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesByTo {
@@ -73,7 +87,9 @@ export interface FileRoutesByTo {
   '/analytics': typeof AppAnalyticsRoute
   '/chat': typeof AppChatRoute
   '/digital-twin': typeof AppDigitalTwinRoute
+  '/home': typeof AppHomeRoute
   '/plants': typeof AppPlantsRoute
+  '/sensor-network': typeof AppSensorNetworkRoute
   '/settings': typeof AppSettingsRoute
 }
 export interface FileRoutesById {
@@ -84,7 +100,9 @@ export interface FileRoutesById {
   '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/chat': typeof AppChatRoute
   '/_app/digital-twin': typeof AppDigitalTwinRoute
+  '/_app/home': typeof AppHomeRoute
   '/_app/plants': typeof AppPlantsRoute
+  '/_app/sensor-network': typeof AppSensorNetworkRoute
   '/_app/settings': typeof AppSettingsRoute
 }
 export interface FileRouteTypes {
@@ -95,7 +113,9 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/chat'
     | '/digital-twin'
+    | '/home'
     | '/plants'
+    | '/sensor-network'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -104,7 +124,9 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/chat'
     | '/digital-twin'
+    | '/home'
     | '/plants'
+    | '/sensor-network'
     | '/settings'
   id:
     | '__root__'
@@ -114,7 +136,9 @@ export interface FileRouteTypes {
     | '/_app/analytics'
     | '/_app/chat'
     | '/_app/digital-twin'
+    | '/_app/home'
     | '/_app/plants'
+    | '/_app/sensor-network'
     | '/_app/settings'
   fileRoutesById: FileRoutesById
 }
@@ -146,11 +170,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/sensor-network': {
+      id: '/_app/sensor-network'
+      path: '/sensor-network'
+      fullPath: '/sensor-network'
+      preLoaderRoute: typeof AppSensorNetworkRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/plants': {
       id: '/_app/plants'
       path: '/plants'
       fullPath: '/plants'
       preLoaderRoute: typeof AppPlantsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/home': {
+      id: '/_app/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AppHomeRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/digital-twin': {
@@ -189,7 +227,9 @@ interface AppRouteChildren {
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppChatRoute: typeof AppChatRoute
   AppDigitalTwinRoute: typeof AppDigitalTwinRoute
+  AppHomeRoute: typeof AppHomeRoute
   AppPlantsRoute: typeof AppPlantsRoute
+  AppSensorNetworkRoute: typeof AppSensorNetworkRoute
   AppSettingsRoute: typeof AppSettingsRoute
 }
 
@@ -198,7 +238,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppChatRoute: AppChatRoute,
   AppDigitalTwinRoute: AppDigitalTwinRoute,
+  AppHomeRoute: AppHomeRoute,
   AppPlantsRoute: AppPlantsRoute,
+  AppSensorNetworkRoute: AppSensorNetworkRoute,
   AppSettingsRoute: AppSettingsRoute,
 }
 
