@@ -14,7 +14,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppPlantsRouteImport } from './routes/_app.plants'
 import { Route as AppDigitalTwinRouteImport } from './routes/_app.digital-twin'
-import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppChatRouteImport } from './routes/_app.chat'
 import { Route as AppAnalyticsRouteImport } from './routes/_app.analytics'
 import { Route as AppAiAnalysisRouteImport } from './routes/_app.ai-analysis'
@@ -43,11 +42,6 @@ const AppDigitalTwinRoute = AppDigitalTwinRouteImport.update({
   path: '/digital-twin',
   getParentRoute: () => AppRoute,
 } as any)
-const AppDashboardRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppChatRoute = AppChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -69,7 +63,6 @@ export interface FileRoutesByFullPath {
   '/ai-analysis': typeof AppAiAnalysisRoute
   '/analytics': typeof AppAnalyticsRoute
   '/chat': typeof AppChatRoute
-  '/dashboard': typeof AppDashboardRoute
   '/digital-twin': typeof AppDigitalTwinRoute
   '/plants': typeof AppPlantsRoute
   '/settings': typeof AppSettingsRoute
@@ -79,7 +72,6 @@ export interface FileRoutesByTo {
   '/ai-analysis': typeof AppAiAnalysisRoute
   '/analytics': typeof AppAnalyticsRoute
   '/chat': typeof AppChatRoute
-  '/dashboard': typeof AppDashboardRoute
   '/digital-twin': typeof AppDigitalTwinRoute
   '/plants': typeof AppPlantsRoute
   '/settings': typeof AppSettingsRoute
@@ -91,7 +83,6 @@ export interface FileRoutesById {
   '/_app/ai-analysis': typeof AppAiAnalysisRoute
   '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/chat': typeof AppChatRoute
-  '/_app/dashboard': typeof AppDashboardRoute
   '/_app/digital-twin': typeof AppDigitalTwinRoute
   '/_app/plants': typeof AppPlantsRoute
   '/_app/settings': typeof AppSettingsRoute
@@ -103,7 +94,6 @@ export interface FileRouteTypes {
     | '/ai-analysis'
     | '/analytics'
     | '/chat'
-    | '/dashboard'
     | '/digital-twin'
     | '/plants'
     | '/settings'
@@ -113,7 +103,6 @@ export interface FileRouteTypes {
     | '/ai-analysis'
     | '/analytics'
     | '/chat'
-    | '/dashboard'
     | '/digital-twin'
     | '/plants'
     | '/settings'
@@ -124,7 +113,6 @@ export interface FileRouteTypes {
     | '/_app/ai-analysis'
     | '/_app/analytics'
     | '/_app/chat'
-    | '/_app/dashboard'
     | '/_app/digital-twin'
     | '/_app/plants'
     | '/_app/settings'
@@ -172,13 +160,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDigitalTwinRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/dashboard': {
-      id: '/_app/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/chat': {
       id: '/_app/chat'
       path: '/chat'
@@ -207,7 +188,6 @@ interface AppRouteChildren {
   AppAiAnalysisRoute: typeof AppAiAnalysisRoute
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppChatRoute: typeof AppChatRoute
-  AppDashboardRoute: typeof AppDashboardRoute
   AppDigitalTwinRoute: typeof AppDigitalTwinRoute
   AppPlantsRoute: typeof AppPlantsRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -217,7 +197,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppAiAnalysisRoute: AppAiAnalysisRoute,
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppChatRoute: AppChatRoute,
-  AppDashboardRoute: AppDashboardRoute,
   AppDigitalTwinRoute: AppDigitalTwinRoute,
   AppPlantsRoute: AppPlantsRoute,
   AppSettingsRoute: AppSettingsRoute,
@@ -232,13 +211,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
