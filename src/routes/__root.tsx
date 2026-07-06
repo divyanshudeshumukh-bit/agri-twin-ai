@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "AgriTwin AI — Digital Twin for Precision Agriculture" },
+      { name: "description", content: "AI-powered digital twin platform for real-time precision farming. Powered by AMD Instinct and Fireworks AI." },
+      { name: "author", content: "AgriTwin AI" },
+      { property: "og:title", content: "AgriTwin AI — Digital Twin for Precision Agriculture" },
+      { property: "og:description", content: "Monitor soil, weather, and plant health in real time with AI-driven recommendations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
