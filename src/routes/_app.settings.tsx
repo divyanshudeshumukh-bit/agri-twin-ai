@@ -100,12 +100,19 @@ function Settings() {
 
       <Section title="API Settings" desc="Connect external services">
         <div>
-          <Label>Fireworks API Key</Label>
-          <Input type="password" placeholder="fw-••••••••••••" className="rounded-xl mt-1" />
+          <Label>AI Service API Key</Label>
+          <Input type="password" placeholder="sk-••••••••••••" className="rounded-xl mt-1" />
         </div>
         <div>
           <Label>Weather API Key</Label>
           <Input type="password" placeholder="••••••••••••" className="rounded-xl mt-1" />
+        </div>
+      </Section>
+
+      <Section title="About" desc="Application info">
+        <div className="text-sm text-muted-foreground">
+          <div><strong className="text-foreground">AgriTwin AI</strong> · v1.1.0</div>
+          <div className="mt-1">Built by <strong className="text-foreground">Team Tech Wizards</strong></div>
         </div>
       </Section>
 
