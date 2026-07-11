@@ -167,11 +167,11 @@ function SensorNetwork() {
           <AnimatedLink />
           <NetworkNode icon={Radio} label="Edge Gateway" sub="Local aggregation · MQTT" tone="warning" />
           <AnimatedLink />
-          <NetworkNode icon={Cloud} label="Cloud AI" sub="AMD Instinct · ROCm" tone="primary" />
+          <NetworkNode icon={Cloud} label="Cloud" sub="Twin simulation" tone="primary" />
           <AnimatedLink />
           <NetworkNode icon={Sprout} label="Farm Sensors" sub="Soil · NPK · pH · Weather" tone="info" />
           <AnimatedLink />
-          <NetworkNode icon={Brain} label="AgriTwin AI" sub="Fireworks · Llama 3 70B" tone="primary" />
+          <NetworkNode icon={Brain} label="AgriTwin AI" sub="Built by Team Tech Wizards" tone="primary" />
         </div>
       </div>
 

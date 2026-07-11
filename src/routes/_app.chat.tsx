@@ -69,11 +69,11 @@ function reply(intent: Intent, q: string, s: Scenario, memory: Msg[]): string {
 
   switch (intent) {
     case "greet":
-      return `${firstTime ? "Hi there! 🌱 " : "Hey again! "}I'm the AgriTwin AI Brain, watching over your **${name}** in real time. What would you like to know?`;
+      return `${firstTime ? "Hello! " : "Hey again! "}I'm **AgriTwin AI**, developed by **Team Tech Wizards**. I can help monitor crop health, recommend irrigation and fertilizer schedules, explain disease risks, and answer farming-related questions. Right now I'm watching over your **${name}** in real time.`;
     case "howareyou":
-      return `I'm running smoothly on Fireworks AI. More importantly, your farm is at **${s.healthScore}/100** health — ${s.description.toLowerCase()}.`;
+      return `I'm running smoothly. More importantly, your farm is at **${s.healthScore}/100** health — ${s.description.toLowerCase()}.`;
     case "aboutself":
-      return "I'm the **AgriTwin AI Brain** — an agriculture-focused assistant powered by Fireworks AI (Llama 3 70B) and an AMD-accelerated digital twin of your farm. I combine live sensor telemetry with plant physiology and weather models to give grounded recommendations.";
+      return "I'm **AgriTwin AI** — an agriculture-focused assistant built by **Team Tech Wizards**. I combine live sensor telemetry with plant physiology and weather models to give grounded recommendations for your farm.";
     case "capabilities":
       return [
         "Here's what I can help you with:",
@@ -122,7 +122,7 @@ function reply(intent: Intent, q: string, s: Scenario, memory: Msg[]): string {
         `3. Recheck sensors in 6 hours — I'll flag anything drifting`,
       ].join("\n");
     case "explain":
-      return "My recommendations combine four inputs: live sensor telemetry, the 30-day weather forecast, a plant-physiology model calibrated to your crop, and historical yield curves. AMD-accelerated twin simulation weights each signal, and Fireworks AI turns the result into plain English.";
+      return "My recommendations combine four inputs: live sensor telemetry, the 30-day weather forecast, a plant-physiology model calibrated to your crop, and historical yield curves. The digital twin weighs each signal and translates the result into plain English.";
     case "summary":
       return [
         `**Today at ${name}**`,
@@ -133,9 +133,9 @@ function reply(intent: Intent, q: string, s: Scenario, memory: Msg[]): string {
         `• Harvest window: ~${sn.harvestDays} days`,
       ].join("\n");
     case "report":
-      return `Farm report drafted 📄 — includes health score, sensor readouts, plant distribution, disease breakdown, and prioritized actions. It would download as **agritwin-${s.key}-report.pdf** in production.`;
+      return `Farm report drafted 📄 — includes health score, sensor readouts, plant distribution, disease breakdown, and prioritized actions. Head to the **Reports** page to print or download.`;
     case "nonfarm":
-      return "That's a bit outside my field 🌾 — I specialize in agriculture: soil, sensors, plants, disease, weather, and harvest planning. But happy to chat! Would you like a farm summary or a specific recommendation?";
+      return "I'm designed to assist with agriculture, crop monitoring, and smart farming. For unrelated topics, I may have limited information. But happy to help — would you like a farm summary or a specific recommendation?";
     default:
       return "Good question. Based on the current twin telemetry, I'd monitor for the next 24 hours and re-check any sensor whose values drift by more than 10%. Want me to explain a specific reading?";
   }
@@ -144,7 +144,7 @@ function reply(intent: Intent, q: string, s: Scenario, memory: Msg[]): string {
 function Chat() {
   const { scenario } = useFarm();
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", text: "Hi 👋 I'm your **AgriTwin AI Brain**. I remember our conversation, understand agriculture in depth, and can also just chat. Ask me anything — or try a suggestion below." },
+    { role: "assistant", text: "Hello! 🌱 I'm **AgriTwin AI**, developed by **Team Tech Wizards**. I can help you monitor crop health, plan irrigation and fertilizer, explain disease risks, and guide you around the platform. What would you like to know?" },
   ]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -174,9 +174,9 @@ function Chat() {
   return (
     <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-9rem)]">
       <div className="mb-4">
-        <div className="text-xs uppercase tracking-widest text-primary font-semibold">AI Brain</div>
-        <h1 className="text-3xl font-bold tracking-tight mt-1">Chat Assistant</h1>
-        <p className="text-muted-foreground text-sm">Conversational memory · agriculture-tuned · Fireworks AI · Llama 3 70B</p>
+        <div className="text-xs uppercase tracking-widest text-primary font-semibold">Assistant</div>
+        <h1 className="text-3xl font-bold tracking-tight mt-1">AI Assistant</h1>
+        <p className="text-muted-foreground text-sm">Conversational memory · agriculture-tuned · built by Team Tech Wizards</p>
       </div>
 
       <div ref={scrollRef} className="glass rounded-2xl flex-1 p-4 overflow-y-auto space-y-4">
