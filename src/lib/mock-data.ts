@@ -230,3 +230,77 @@ export const plants = Array.from({ length: 12 }, (_, i) => ({
   harvestRemaining: 18 + ((i * 5) % 30),
   expectedYield: (2.4 + (i % 4) * 0.6).toFixed(1),
 }));
+
+// ------- Farm Zones ---------
+
+export interface Zone {
+  id: string;
+  name: string;
+  area: string;
+  crop: string;
+  health: number;
+  disease: number;
+  growth: number;
+  water: "Optimal" | "Low" | "High";
+  sensor: "Online" | "Warning" | "Offline";
+  alert: "Normal" | "Warning" | "Critical";
+  plants: number;
+}
+
+export function zonesFor(key: ScenarioKey): Zone[] {
+  const base: Zone[] = [
+    { id: "A", name: "Zone A", area: "1.2 ha", crop: "Tomato",  health: 94, disease: 6,  growth: 74, water: "Optimal", sensor: "Online",  alert: "Normal",   plants: 42 },
+    { id: "B", name: "Zone B", area: "0.9 ha", crop: "Corn",    health: 88, disease: 12, growth: 68, water: "Optimal", sensor: "Online",  alert: "Normal",   plants: 36 },
+    { id: "C", name: "Zone C", area: "1.4 ha", crop: "Wheat",   health: 82, disease: 18, growth: 70, water: "Low",     sensor: "Warning", alert: "Warning",  plants: 39 },
+    { id: "D", name: "Zone D", area: "0.7 ha", crop: "Soybean", health: 78, disease: 22, growth: 61, water: "Optimal", sensor: "Online",  alert: "Warning",  plants: 32 },
+  ];
+  if (key === "dry") {
+    base[0] = { ...base[0], health: 72, water: "Low", alert: "Warning" };
+    base[2] = { ...base[2], health: 58, water: "Low", alert: "Critical", disease: 34 };
+  }
+  if (key === "disease") {
+    base[3] = { ...base[3], health: 42, disease: 58, alert: "Critical", sensor: "Warning" };
+    base[1] = { ...base[1], health: 66, disease: 34, alert: "Warning" };
+  }
+  return base;
+}
+
+// ------- Notifications ---------
+
+export interface Notification {
+  id: string;
+  icon: "disease" | "irrigation-start" | "irrigation-done" | "fertilizer" | "report" | "weather" | "sensor";
+  title: string;
+  body: string;
+  time: string;
+  read: boolean;
+}
+
+export function baseNotifications(key: ScenarioKey): Notification[] {
+  const common: Notification[] = [
+    { id: "n1", icon: "report", title: "New Report Generated", body: "Weekly farm report is ready for review.", time: "3m ago", read: false },
+    { id: "n2", icon: "irrigation-done", title: "Irrigation Completed", body: "Zone A irrigation cycle finished successfully.", time: "18m ago", read: false },
+    { id: "n3", icon: "fertilizer", title: "Fertilizer Reminder", body: "Next NPK application scheduled for tomorrow.", time: "1h ago", read: true },
+    { id: "n4", icon: "weather", title: "Weather Warning", body: "Heavy rain expected in 6 hours.", time: "2h ago", read: true },
+  ];
+  if (key === "disease") common.unshift({ id: "nd", icon: "disease", title: "Disease Alert", body: "Late Blight detected in NE quadrant. Immediate action recommended.", time: "just now", read: false });
+  if (key === "dry") common.unshift({ id: "ns", icon: "sensor", title: "Sensor Offline", body: "Soil sensor SS-04 signal lost.", time: "5m ago", read: false });
+  return common;
+}
+
+// ------- Reports ---------
+
+export interface FarmReport {
+  id: string;
+  title: string;
+  date: string;
+  scenario: string;
+  summary: string;
+}
+
+export const pastReports: FarmReport[] = [
+  { id: "R-2028", title: "Weekly Health Summary", date: "Nov 28, 2025", scenario: "Healthy", summary: "Farm operating at 92% health. Yield forecast +21%." },
+  { id: "R-2027", title: "Disease Response Report", date: "Nov 21, 2025", scenario: "Disease Outbreak", summary: "Late blight contained in NE quadrant after 3-day treatment." },
+  { id: "R-2026", title: "Water Efficiency Review", date: "Nov 14, 2025", scenario: "Dry", summary: "34% reduction in water use vs baseline. Smart irrigation active." },
+  { id: "R-2025", title: "Monthly Yield Forecast", date: "Nov 01, 2025", scenario: "Healthy", summary: "Projected harvest in 24 days. Confidence 92%." },
+];
