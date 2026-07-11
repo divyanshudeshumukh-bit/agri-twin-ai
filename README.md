@@ -1,0 +1,1 @@
+AI-powered precision agriculture platform using IoT, computer vision, weather data, and Fireworks AI on AMD infrastructure. It helps farmers optimize irrigation, fertilizer use, disease detection, and harvest prediction with explainable recommendations. Built for the AMD Developer Challenge.
